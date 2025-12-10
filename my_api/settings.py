@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+
     'core_app',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -75,8 +76,12 @@ WSGI_APPLICATION = 'my_api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'myapi_db',         # the PostgreSQL database you created
+        'USER': 'postgres',         # your PostgreSQL username
+        'PASSWORD': 'password', # your PostgreSQL password
+        'HOST': 'localhost',        # usually localhost
+        'PORT': '5432',             # default PostgreSQL port
     }
 }
 
