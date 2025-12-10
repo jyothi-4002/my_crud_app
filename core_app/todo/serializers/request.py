@@ -1,7 +1,12 @@
-from dataclasses import dataclass
+# core_app/todo/serializers/request.py
+from rest_framework import serializers
 
-@dataclass
-class TodoRequest:
-    title: str
-    description: str = ""
-    completed: bool = False
+class TodoCreateRequestSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=255)
+    description = serializers.CharField(allow_blank=True, required=False)
+    completed = serializers.BooleanField(default=False)
+
+class TodoUpdateRequestSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=255, required=False)
+    description = serializers.CharField(allow_blank=True, required=False)
+    completed = serializers.BooleanField(required=False)

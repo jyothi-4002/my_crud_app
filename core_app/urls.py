@@ -1,7 +1,11 @@
-from django.urls import path
-from . import views
+# core_app/urls.py
+from django.urls import path, include
+from core_app import views as core_views  # if you have hello/hai
 
 urlpatterns = [
-    path("hello/", views.hello),
-    path("hai/", views.hai),
+    path("", include([
+        path("hello/", core_views.hello, name='hello'),
+        path("hai/", core_views.hai, name='hai'),
+    ])),
+    path("todo/", include('core_app.todo.urls')),
 ]

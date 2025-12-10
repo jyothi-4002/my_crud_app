@@ -1,10 +1,10 @@
-from dataclasses import dataclass
+# core_app/todo/serializers/response.py
+from rest_framework import serializers
 
-@dataclass
-class TodoResponse:
-    id: int
-    title: str
-    description: str
-    completed: bool
-    created_at: str
-    updated_at: str
+class TodoResponseSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField()
+    description = serializers.CharField(allow_blank=True)
+    completed = serializers.BooleanField()
+    created_at = serializers.CharField()
+    updated_at = serializers.CharField()
