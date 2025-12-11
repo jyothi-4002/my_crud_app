@@ -1,73 +1,41 @@
 # core_app/todo/controller.py
-from django.core.exceptions import ObjectDoesNotExist
-from core_app.todo.models.todo import TodoItem
-from core_app.todo.dataclasses.request import TodoRequest
-from core_app.todo.dataclasses.response import TodoResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from core_app.todo.views import TodoView
+from core_app.todo.dataclasses.request.create import TodoCreateRequest
+from core_app.todo.dataclasses.request.update import TodoUpdateRequest
+from core_app.todo.dataclasses.request.get import TodoGetRequest
+from core_app.todo.dataclasses.request.getall import TodoGetAllRequest
+from core_app.todo.dataclasses.request.delete import TodoDeleteRequest
 
-def create_todo(data: TodoRequest) -> TodoResponse:
-    todo = TodoItem.objects.create(
-        title=data.title,
-        description=data.description,
-        completed=data.completed
-    )
-    return TodoResponse(
-        id=todo.id,
-        title=todo.title,
-        description=todo.description or "",
-        completed=todo.completed,
-        created_at=todo.created_at.isoformat(),
-        updated_at=todo.updated_at.isoformat()
-    )
+todo_view = TodoView()
 
-def get_all_todos():
-    todos = TodoItem.objects.all().order_by('-created_at')
-    return [TodoResponse(
-        id=t.id,
-        title=t.title,
-        description=t.description or "",
-        completed=t.completed,
-        created_at=t.created_at.isoformat(),
-        updated_at=t.updated_at.isoformat()
-    ) for t in todos]
 
-def get_todo_by_id(todo_id: int):
-    try:
-        todo = TodoItem.objects.get(id=todo_id)
-    except ObjectDoesNotExist:
-        return None
-    return TodoResponse(
-        id=todo.id,
-        title=todo.title,
-        description=todo.description or "",
-        completed=todo.completed,
-        created_at=todo.created_at.isoformat(),
-        updated_at=todo.updated_at.isoformat()
-    )
+@api_view(['POST'])
+def create_todo(request):
+    params = TodoCreateRequest(**request.data)
+    return todo_view.create_extract(params)
 
-def update_todo(todo_id: int, data: TodoRequest):
-    try:
-        todo = TodoItem.objects.get(id=todo_id)
-    except ObjectDoesNotExist:
-        return None
-    # update only fields present in dataclass (we expect full object for now)
-    if data.title is not None:
-        todo.title = data.title
-    todo.description = data.description
-    todo.completed = data.completed
-    todo.save()
-    return TodoResponse(
-        id=todo.id,
-        title=todo.title,
-        description=todo.description or "",
-        completed=todo.completed,
-        created_at=todo.created_at.isoformat(),
-        updated_at=todo.updated_at.isoformat()
-    )
 
-def delete_todo(todo_id: int):
-    try:
-        todo = TodoItem.objects.get(id=todo_id)
-    except ObjectDoesNotExist:
-        return False
-    todo.delete()
-    return True
+@api_view(['GET'])
+def get_all_todos(request):
+    params = TodoGetAllRequest(**request.query_params)
+    return todo_view.get_all_extract(params)
+
+
+@api_view(['GET'])
+def get_todo(request, todo_id):
+    params = TodoGetRequest(id=todo_id)
+    return todo_view.get_extract(params)
+
+
+@api_view(['PUT', 'PATCH'])
+def update_todo(request, todo_id):
+    params = TodoUpdateRequest(id=todo_id, **request.data)
+    return todo_view.update_extract(params, todo_id=todo_id)
+
+
+@api_view(['DELETE'])
+def delete_todo(request, todo_id):
+    params = TodoDeleteRequest(id=todo_id)
+    return todo_view.delete_extract(params)

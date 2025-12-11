@@ -1,74 +1,84 @@
 # core_app/todo/views.py
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from django.core.paginator import Paginator
+from django.db import transaction
 from rest_framework import status
+from rest_framework.response import Response
 
-from core_app.todo.serializers.request import (
-    TodoCreateRequestSerializer, TodoUpdateRequestSerializer
-)
-from core_app.todo.serializers.response import TodoResponseSerializer
-from core_app.todo.dataclasses.request import TodoRequest
-from core_app.todo.controller import (
-    create_todo, get_all_todos, get_todo_by_id, update_todo, delete_todo
-)
+from core_app.todo.dataclasses.request.create import TodoCreateRequest
+from core_app.todo.dataclasses.request.update import TodoUpdateRequest
+from core_app.todo.dataclasses.request.get import TodoGetRequest
+from core_app.todo.dataclasses.request.getall import TodoGetAllRequest
+from core_app.todo.dataclasses.request.delete import TodoDeleteRequest
 
-@api_view(['POST'])
-def create(request):
-    serializer = TodoCreateRequestSerializer(data=request.data)
-    if not serializer.is_valid():
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    validated = serializer.validated_data
-    # create dataclass from validated data
-    todo_req = TodoRequest(
-        title=validated.get('title'),
-        description=validated.get('description', ''),
-        completed=validated.get('completed', False)
-    )
-    todo_resp = create_todo(todo_req)
-    out = TodoResponseSerializer(todo_resp.__dict__).data
-    return Response(out, status=status.HTTP_201_CREATED)
+from core_app.todo.models import TodoItem
+from core_app.todo.utils import success_response_data, error_response_data, add_page_parameter
 
-@api_view(['GET'])
-def get_all(request):
-    todos = get_all_todos()
-    out = [TodoResponseSerializer(t.__dict__).data for t in todos]
-    return Response(out)
 
-@api_view(['GET'])
-def get(request, todo_id: int):
-    todo = get_todo_by_id(todo_id)
-    if todo is None:
-        return Response({'detail': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
-    return Response(TodoResponseSerializer(todo.__dict__).data)
+class TodoView:
+    def __init__(self):
+        self.data_created = "Todo created successfully"
+        self.data_get = "Data fetched successfully"
+        self.data_updated = "Todo updated successfully"
+        self.data_deleted = "Todo deleted successfully"
 
-@api_view(['PUT', 'PATCH'])
-def update(request, todo_id: int):
-    # allow partial update for PATCH
-    is_patch = request.method == 'PATCH'
-    serializer = TodoUpdateRequestSerializer(data=request.data, partial=is_patch)
-    if not serializer.is_valid():
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    validated = serializer.validated_data
+    def create_extract(self, params: TodoCreateRequest):
+        with transaction.atomic():
+            obj = TodoItem.create_item(
+                title=params.title,
+                description=params.description,
+                completed=params.completed,
+            )
+        resp = TodoItem._to_dict(obj)
+        return Response(status=status.HTTP_201_CREATED,
+                        data=success_response_data(message=self.data_created, data=resp))
 
-    # Fetch existing todo for partial fields if needed
-    current = get_todo_by_id(todo_id)
-    if current is None:
-        return Response({'detail': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+    def get_all_extract(self, params: TodoGetAllRequest):
+        page_num = int(getattr(params, "page_num", 1) or 1)
+        limit = int(getattr(params, "limit", 50) or 50)
+        rows = TodoItem.get_all_items()
+        paginator = Paginator(rows, limit)
+        if paginator.num_pages == 0:
+            final = []
+        else:
+            if page_num > paginator.num_pages:
+                return Response(error_response_data(message="Page number exceeded"), status=status.HTTP_400_BAD_REQUEST)
+            page = paginator.page(page_num)
+            final = page.object_list
+        paginated = add_page_parameter(
+            final_data=final,
+            page_num=page_num,
+            total_page=paginator.num_pages,
+            total_count=paginator.count,
+            next_page_required=(page_num != paginator.num_pages)
+        )
+        return Response(status=status.HTTP_200_OK, data=success_response_data(message=self.data_get, data=paginated))
 
-    # build a TodoRequest dataclass using existing values when missing (for PUT require full)
-    title = validated.get('title') if 'title' in validated else current.title
-    description = validated.get('description') if 'description' in validated else current.description
-    completed = validated.get('completed') if 'completed' in validated else current.completed
+    def get_extract(self, params: TodoGetRequest):
+        todo_id = getattr(params, "id", None)
+        if todo_id is None:
+            return Response(error_response_data(message="todo id is required"), status=status.HTTP_400_BAD_REQUEST)
+        t = TodoItem.get_item_by_id(int(todo_id))
+        if t is None:
+            return Response(error_response_data(message="Not found"), status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_200_OK, data=success_response_data(message=self.data_get, data=t))
 
-    todo_req = TodoRequest(title=title, description=description, completed=completed)
-    updated = update_todo(todo_id, todo_req)
-    if updated is None:
-        return Response({'detail': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
-    return Response(TodoResponseSerializer(updated.__dict__).data)
+    def update_extract(self, params: TodoUpdateRequest, todo_id: int = None):
+        if todo_id is None:
+            return Response(error_response_data(message="todo id is required"), status=status.HTTP_400_BAD_REQUEST)
+        updated = TodoItem.update_item(todo_id, title=params.title, description=params.description, completed=params.completed)
+        if updated is None:
+            return Response(error_response_data(message="Not found"), status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_200_OK, data=success_response_data(message=self.data_updated, data=updated))
 
-@api_view(['DELETE'])
-def delete(request, todo_id: int):
-    ok = delete_todo(todo_id)
-    if not ok:
-        return Response({'detail': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
-    return Response({'message': 'Todo deleted successfully'}, status=status.HTTP_200_OK)
+    def delete_extract(self, params: TodoDeleteRequest):
+        ids = getattr(params, "ids", None) or ([getattr(params, "id", None)] if getattr(params, "id", None) else [])
+        if not ids:
+            return Response(error_response_data(message="id(s) are required"), status=status.HTTP_400_BAD_REQUEST)
+        deleted_ids = []
+        for tid in ids:
+            ok = TodoItem.delete_item(int(tid))
+            if ok:
+                deleted_ids.append(int(tid))
+        if not deleted_ids:
+            return Response(error_response_data(message="No matching items to delete"), status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_200_OK, data=success_response_data(message=self.data_deleted, data={"deleted_ids": deleted_ids}))

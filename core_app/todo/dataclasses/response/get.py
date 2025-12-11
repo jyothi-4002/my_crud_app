@@ -1,8 +1,7 @@
-# core_app/todo/dataclasses/response.py
 from dataclasses import dataclass
 
 @dataclass
-class TodoResponse:
+class TodoGetResponse:
     id: int
     title: str
     description: str

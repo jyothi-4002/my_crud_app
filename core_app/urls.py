@@ -1,11 +1,9 @@
 # core_app/urls.py
 from django.urls import path, include
-from core_app import views as core_views  # if you have hello/hai
+from core_app import views as core_views
 
 urlpatterns = [
-    path("", include([
-        path("hello/", core_views.hello, name='hello'),
-        path("hai/", core_views.hai, name='hai'),
-    ])),
-    path("todo/", include('core_app.todo.urls')),
+    path("hello/", core_views.hello, name='hello'),
+    path("hai/", core_views.hai, name='hai'),
+    path("todo/", include("core_app.todo.urls")),  # include the todo URLs correctly
 ]
