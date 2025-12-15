@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core_app.todo.dataclasses.response.getall import TodoGetAllResponse, TodoGetAllItem
+from core_app.feature.todo.dataclasses.response.getall import TodoGetAllResponse, TodoGetAllItem
 
 class TodoGetAllItemSerializer(serializers.Serializer):
     id = serializers.IntegerField()

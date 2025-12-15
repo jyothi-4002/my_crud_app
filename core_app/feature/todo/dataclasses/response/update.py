@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
 @dataclass
-class TodoGetResponse:
+class TodoUpdateResponse:
     id: int
     title: str
     description: str
     completed: bool
-    created_at: str
-    updated_at: str
+    createdAt: str
+    updatedAt: str

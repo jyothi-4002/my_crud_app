@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from core_app.todo.dataclasses.request.create import TodoCreateRequest
+from core_app.feature.todo.dataclasses.request.create import TodoCreateRequest
 
 class TodoCreateRequestSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255)
-    description = serializers.CharField(allow_blank=True, required=False)
+    description = serializers.CharField(allow_blank=False, required=False)
     completed = serializers.BooleanField(default=False)
 
     def create(self, validated_data) -> TodoCreateRequest:

@@ -7,8 +7,8 @@ class TodoGetAllItem:
     title: str
     description: str
     completed: bool
-    created_at: str
-    updated_at: str
+    createdAt: str
+    updatedAt: str
 
 @dataclass
 class TodoGetAllResponse:

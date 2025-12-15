@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from core_app.todo.dataclasses.response.update import TodoUpdateResponse
+from core_app.feature.todo.dataclasses.response.create import TodoCreateResponse
 
-class TodoUpdateResponseSerializer(serializers.Serializer):
+class TodoCreateResponseSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     title = serializers.CharField()
     description = serializers.CharField(allow_blank=True)
@@ -9,6 +9,5 @@ class TodoUpdateResponseSerializer(serializers.Serializer):
     created_at = serializers.CharField()
     updated_at = serializers.CharField()
 
-    def create(self, validated_data) -> TodoUpdateResponse:
-        return TodoUpdateResponse(**validated_data)
-
+    def create(self, validated_data) -> TodoCreateResponse:
+        return TodoCreateResponse(**validated_data)
