@@ -23,7 +23,7 @@ class Music(models.Model):
         db_table = "music"
         ordering = ["-created_at"]
 
-    # -------------------- DATABASE OPERATIONS -------------------- #
+    # database
 
     @classmethod
     def create_item(cls, data: MusicCreateRequest):
@@ -87,8 +87,7 @@ class Music(models.Model):
         obj.delete()
         return True
 
-    # -------------------- RESPONSE MAPPER -------------------- #
-
+# response mapper
     @staticmethod
     def to_response(obj) -> dict:
         """
