@@ -32,8 +32,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
 
-    'core_app',
-    'core_app.feature.todo',
+    'feature.music',
+    'feature.todo',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',

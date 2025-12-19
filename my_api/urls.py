@@ -4,5 +4,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("core_app.urls")),  # only include core_app once
+    path("music/", include("feature.music.urls")),
+    path("todo/", include("feature.todo.urls")),
+    # only include core_app once
 ]

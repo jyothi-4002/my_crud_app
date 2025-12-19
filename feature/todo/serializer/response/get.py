@@ -1,0 +1,13 @@
+from rest_framework import serializers
+from feature.todo.dataclasses.response.get import TodoGetResponse
+
+class TodoGetResponseSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField()
+    description = serializers.CharField(allow_blank=True)
+    completed = serializers.BooleanField()
+    created_at = serializers.CharField()
+    updated_at = serializers.CharField()
+
+    def create(self, validated_data) -> TodoGetResponse:
+        return TodoGetResponse(**validated_data)
