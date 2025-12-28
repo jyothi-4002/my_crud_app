@@ -1,6 +1,4 @@
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
 
 from feature.music.views import MusicView
 from feature.music.utils import MusicUtils
@@ -19,10 +17,7 @@ def create_music(request):
     serializer = MusicCreateRequestSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    result = music_view.create(serializer.save())
-    return Response(MusicUtils.success_response_data(data=result))
-
-
+    return music_view.create(serializer.save())
 
 
 @api_view(["GET"])
@@ -31,8 +26,7 @@ def get_music(request):
     serializer = MusicGetRequestSerializer(data=params)
     serializer.is_valid(raise_exception=True)
 
-    result = music_view.get(serializer.save())
-    return Response(MusicUtils.success_response_data(data=result))
+    return music_view.get(serializer.save())
 
 
 @api_view(["GET"])
@@ -41,8 +35,7 @@ def get_all_music(request):
     serializer = MusicGetAllRequestSerializer(data=params)
     serializer.is_valid(raise_exception=True)
 
-    result = music_view.get_all(serializer.save(), request)
-    return Response(MusicUtils.success_response_data(data=result))
+    return music_view.get_all(serializer.save(), request)
 
 
 @api_view(["PUT"])
@@ -54,8 +47,7 @@ def update_music(request):
     serializer = MusicUpdateRequestSerializer(data=data)
     serializer.is_valid(raise_exception=True)
 
-    result = music_view.update(serializer.save())
-    return Response(MusicUtils.success_response_data(data=result))
+    return music_view.update(serializer.save())
 
 
 @api_view(["DELETE"])
@@ -66,5 +58,4 @@ def delete_music(request):
     serializer = MusicDeleteRequestSerializer(data={"ids": ids})
     serializer.is_valid(raise_exception=True)
 
-    result = music_view.delete(serializer.save())
-    return Response(MusicUtils.success_response_data(data=result))
+    return music_view.delete(serializer.save())
