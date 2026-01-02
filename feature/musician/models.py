@@ -1,11 +1,18 @@
 from django.db import models
+from feature.music.models import Music   # import existing model
 
 
 class Musician(models.Model):
+    music = models.ForeignKey(
+        Music,
+        on_delete=models.CASCADE,
+        related_name="musicians"
+    )
     name = models.CharField(max_length=255)
     age = models.IntegerField()
 
     class Meta:
+
         db_table = "musician"
 
     @classmethod

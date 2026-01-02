@@ -1,5 +1,4 @@
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 
 from common.utils import CommonUtils
 from feature.musician.views import MusicianView
@@ -16,9 +15,7 @@ musician_view = MusicianView()
 def create_musician(request):
     serializer = MusicianCreateRequestSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-
-    result = musician_view.create(serializer.save())
-    return Response(result)
+    return musician_view.create(serializer.save())
 
 
 @api_view(["GET"])
@@ -26,9 +23,7 @@ def get_musician(request):
     params = CommonUtils.get_query_params(request)
     serializer = MusicianGetRequestSerializer(data=params)
     serializer.is_valid(raise_exception=True)
-
-    result = musician_view.get(serializer.save())
-    return Response(result)
+    return musician_view.get(serializer.save())
 
 
 @api_view(["GET"])
@@ -36,9 +31,7 @@ def get_all_musician(request):
     params = CommonUtils.get_query_params(request)
     serializer = MusicianGetAllRequestSerializer(data=params)
     serializer.is_valid(raise_exception=True)
-
-    result = musician_view.get_all(serializer.save())
-    return Response(result)
+    return musician_view.get_all(serializer.save())
 
 
 @api_view(["PUT"])
@@ -49,12 +42,12 @@ def update_musician(request):
 
     serializer = MusicianUpdateRequestSerializer(data=data)
     serializer.is_valid(raise_exception=True)
-
-    result = musician_view.update(serializer.save())
-    return Response(result)
+    return musician_view.update(serializer.save())
 
 
 @api_view(["DELETE"])
 def delete_musician(request):
     params = CommonUtils.get_query_params(request)
-
+    serializer = MusicianDeleteRequestSerializer(data=params)
+    serializer.is_valid(raise_exception=True)
+    return musician_view.delete(serializer.save())
