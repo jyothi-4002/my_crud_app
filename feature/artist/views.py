@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from feature.artist.models import Artist
-from feature.artist.utils import ArtistUtils
+from common.utils import CommonUtils
 
 
 class ArtistView:
@@ -11,7 +11,7 @@ class ArtistView:
     def create(self, params):
         obj = Artist.create_item(params)
         return Response(
-            ArtistUtils.success_response_data(data=Artist.to_response(obj)),
+            CommonUtils.success_response_data(data=Artist.to_response(obj)),
             status=status.HTTP_201_CREATED
         )
 
@@ -19,12 +19,12 @@ class ArtistView:
         obj = Artist.get_item(params.id)
         if not obj:
             return Response(
-                ArtistUtils.error_response_data("Artist not found"),
+                CommonUtils.error_response_data("Artist not found"),
                 status=status.HTTP_404_NOT_FOUND
             )
 
         return Response(
-            ArtistUtils.success_response_data(data=Artist.to_response(obj))
+            CommonUtils.success_response_data(data=Artist.to_response(obj))
         )
 
     def get_all(self, params, request):
@@ -42,14 +42,14 @@ class ArtistView:
         }
 
         return Response(
-            ArtistUtils.success_response_data(data=response_data)
+            CommonUtils.success_response_data(data=response_data)
         )
 
     def update(self, params):
         obj = Artist.get_item(params.id)
         if not obj:
             return Response(
-                ArtistUtils.error_response_data("Artist not found"),
+                CommonUtils.error_response_data("Artist not found"),
                 status=status.HTTP_404_NOT_FOUND
             )
 
@@ -60,7 +60,7 @@ class ArtistView:
         obj.save()
 
         return Response(
-            ArtistUtils.success_response_data(data=Artist.to_response(obj))
+            CommonUtils.success_response_data(data=Artist.to_response(obj))
         )
 
     def delete(self, params):
@@ -71,7 +71,7 @@ class ArtistView:
                 deleted_ids.append(aid)
 
         return Response(
-            ArtistUtils.success_response_data(
+            CommonUtils.success_response_data(
                 data={"deleted_ids": deleted_ids}
             )
         )

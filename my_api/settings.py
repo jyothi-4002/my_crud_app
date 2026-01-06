@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_yasg',
     'feature.todo',
     "feature.artist.apps.ArtistConfig",
     "feature.music.apps.MusicConfig",

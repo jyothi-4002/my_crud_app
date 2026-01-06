@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
+from drf_yasg import openapi
+from common.swagger import SwaggerUtils
 from feature.todo.views import TodoView
 from feature.todo.utils import TodoUtils
 
@@ -12,7 +13,7 @@ from feature.todo.serializer.request.delete import TodoDeleteRequestSerializer
 
 todo_view = TodoView()
 
-
+@SwaggerUtils.create_endpoint(TodoCreateRequestSerializer, description="Create a new music record")
 @api_view(["POST"])
 def create_todo(request):
     serializer = TodoCreateRequestSerializer(data=request.data)
@@ -21,7 +22,10 @@ def create_todo(request):
     params = serializer.validated_data   # ✅ FIX HERE
     return todo_view.create(params)
 
-
+@SwaggerUtils.get_endpoint(
+    query_params=[{"name": "id", "type": "integer", "required": True, "description": "Music ID"}],
+    description="Get music by ID"
+)
 @api_view(["GET"])
 def get_todo(request):
     params = TodoUtils.get_query_params(request)
@@ -30,7 +34,10 @@ def get_todo(request):
 
     return todo_view.get(serializer.validated_data)
 
-
+@SwaggerUtils.get_endpoint(
+    query_params=[{"name": "page_num", "type": "integer", "required": False, "description": "Page number"}],
+    description="Get all music records"
+)
 @api_view(["GET"])
 def get_all_todos(request):
     params = TodoUtils.get_query_params(request)
@@ -39,6 +46,11 @@ def get_all_todos(request):
 
     return todo_view.get_all(serializer.validated_data, request)
 
+@SwaggerUtils.update_endpoint(
+    TodoUpdateRequestSerializer,
+    query_params=[{"name": "id", "type": "integer", "required": True, "description": "Music ID"}],
+    description="Update music by ID"
+)
 @api_view(["PUT", "PATCH"])
 def update_todo(request):
     params = TodoUtils.get_query_params(request)
@@ -58,7 +70,10 @@ def update_todo(request):
 
     return todo_view.update(serializer.validated_data)
 
-
+@SwaggerUtils.delete_endpoint(
+    query_params=[{"name": "ids", "type": "string", "required": True, "description": "Comma-separated music IDs"}],
+    description="Delete music(s)"
+)
 @api_view(["DELETE"])
 def delete_todo(request):
     params = TodoUtils.get_query_params(request)

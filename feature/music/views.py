@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from feature.music.models import Music
-from feature.music.utils import MusicUtils
+from common.utils import CommonUtils
 
 
 class MusicView:
@@ -13,7 +13,7 @@ class MusicView:
         data = Music.to_response(obj)
 
         return Response(
-            MusicUtils.success_response_data(data=data),
+            CommonUtils.success_response_data(data=data),
             status=status.HTTP_201_CREATED
         )
 
@@ -21,12 +21,12 @@ class MusicView:
         obj = Music.get_item(params.id)
         if not obj:
             return Response(
-                MusicUtils.error_response_data("Music not found"),
+                CommonUtils.error_response_data("Music not found"),
                 status=status.HTTP_404_NOT_FOUND
             )
 
         return Response(
-            MusicUtils.success_response_data(
+            CommonUtils.success_response_data(
                 data=Music.to_response(obj)
             )
         )
@@ -46,14 +46,14 @@ class MusicView:
         }
 
         return Response(
-            MusicUtils.success_response_data(data=response_data)
+            CommonUtils.success_response_data(data=response_data)
         )
 
     def update(self, params):
         obj = Music.get_item(params.id)
         if not obj:
             return Response(
-                MusicUtils.error_response_data("Music not found"),
+                CommonUtils.error_response_data("Music not found"),
                 status=status.HTTP_404_NOT_FOUND
             )
 
@@ -64,7 +64,7 @@ class MusicView:
         obj.save()
 
         return Response(
-            MusicUtils.success_response_data(
+            CommonUtils.success_response_data(
                 data=Music.to_response(obj)
             )
         )
@@ -77,7 +77,7 @@ class MusicView:
                 deleted_ids.append(mid)
 
         return Response(
-            MusicUtils.success_response_data(
+            CommonUtils.success_response_data(
                 data={"deleted_ids": deleted_ids}
             )
         )
