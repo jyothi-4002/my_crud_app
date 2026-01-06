@@ -32,15 +32,19 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
 
-    'feature.music',
-    'feature.todo',
-    'rest_framework',
+
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'feature.todo',
+    "feature.artist.apps.ArtistConfig",
+    "feature.music.apps.MusicConfig",
+
 ]
 
 MIDDLEWARE = [

@@ -6,5 +6,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("music/", include("feature.music.urls")),
     path("todo/", include("feature.todo.urls")),
+    path("artist/", include("feature.artist.urls")),
     # only include core_app once
 ]

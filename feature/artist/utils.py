@@ -1,9 +1,9 @@
+# feature/artist/utils.py
+
 import urllib
 from rest_framework.request import Request
 
-
-class CommonUtils:
-
+class ArtistUtils:  # <-- renamed from CommonUtils
     @staticmethod
     def success_response_data(message=None, data=None):
         if message is None and data is None:
@@ -33,7 +33,7 @@ class CommonUtils:
             url = request.path
 
         params = {}
-        query, _ = CommonUtils.extract_params(url)
+        query, _ = ArtistUtils.extract_params(url)
 
         for q in query:
             if "=" in q:

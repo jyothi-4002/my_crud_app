@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import List
 
-
 @dataclass
-class MusicianDeleteDC:
+class ArtistDeleteRequest:
     ids: List[int]

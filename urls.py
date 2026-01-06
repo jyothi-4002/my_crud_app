@@ -1,11 +1,10 @@
-# core_app/urls.py
+from django.contrib import admin
 from django.urls import path, include
-import views as core_views
 
 urlpatterns = [
-    path("hello/", core_views.hello, name='hello'),
-    path("hai/", core_views.hai, name='hai'),
-    path("todo/", include("core_app.feature.todo.urls")),
-    path("music/", include("core_app.feature.music.urls")),
-    # include the todo URLs correctly
+    path('admin/', admin.site.urls),
+
+    path('music/', include('myapi.feature.music.urls')),
+    path('todo/', include('myapi.feature.todo.urls')),
+    path('artist/', include('myapi.feature.artist.urls')),  # ✅ must be included
 ]

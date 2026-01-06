@@ -5,6 +5,7 @@ from typing import Optional
 class MusicCreateRequest:
     title: str
     singer: str
+    artist_id: int
     writer: str
     description: Optional[str] = None
     released_date: Optional[str] = None

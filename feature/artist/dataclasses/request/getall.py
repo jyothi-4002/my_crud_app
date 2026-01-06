@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-
 @dataclass
-class MusicianGetAllDC:
+class ArtistGetAllRequest:
     page_num: int = 1
     limit: int = 10

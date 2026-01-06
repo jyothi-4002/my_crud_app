@@ -4,6 +4,7 @@ from feature.music.dataclasses.request.update import MusicUpdateRequest
 class MusicUpdateRequestSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     title = serializers.CharField(required=False)
+    artist_id = serializers.IntegerField(required=False)
     singer = serializers.CharField(required=False)
     writer = serializers.CharField(required=False)
     description = serializers.CharField(required=False)
