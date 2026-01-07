@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from drf_spectacular.utils import OpenApiParameter
 from feature.music.dataclasses.request.update import MusicUpdateRequest
 
 class MusicUpdateRequestSerializer(serializers.Serializer):
@@ -11,3 +12,15 @@ class MusicUpdateRequestSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         return MusicUpdateRequest(**validated_data)
+
+    @staticmethod
+    def get_parameters():
+        return [
+            OpenApiParameter(
+                name="id",
+                description="Music ID",
+                required=True,
+                type=int,
+                location=OpenApiParameter.QUERY
+            )
+        ]

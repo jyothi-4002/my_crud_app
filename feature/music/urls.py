@@ -1,13 +1,10 @@
 from django.urls import path
-from feature.music import controller
+from .controller import MusicController
 
 urlpatterns = [
-    path("create/", controller.create_music),
-    path("get/", controller.get_music),
-    path("get-all/", controller.get_all_music),
-    path("update/", controller.update_music),
-    path("delete/", controller.delete_music),
+    path("create/", MusicController.create),
+    path("get/", MusicController.get),
+    path("get-all/", MusicController.get_all),
+    path("update/", MusicController.update),
+    path("delete/", MusicController.delete),
 ]
-
-
-

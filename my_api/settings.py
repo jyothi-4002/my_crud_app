@@ -30,6 +30,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+
 INSTALLED_APPS = [
 
 
@@ -43,10 +44,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'feature.todo',
+    "drf_spectacular",
     "feature.artist.apps.ArtistConfig",
     "feature.music.apps.MusicConfig",
 
 ]
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

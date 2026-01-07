@@ -1,24 +1,31 @@
 from django.db import models
 from django.utils import timezone
+
 from feature.artist.models import Artist
 from feature.music.dataclasses.request.create import MusicCreateRequest
 from feature.music.dataclasses.request.update import MusicUpdateRequest
 
+
 class Music(models.Model):
     title = models.CharField(max_length=255)
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name="songs")
+    artist = models.ForeignKey(
+        Artist,
+        on_delete=models.CASCADE,
+        related_name="songs"
+    )
     singer = models.CharField(max_length=255)
     writer = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     released_date = models.DateField(blank=True, null=True)
 
     created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)  # ✅ FIXED
 
     class Meta:
         db_table = "music"
         ordering = ["-created_at"]
 
+    # ---------------- CREATE ----------------
     @classmethod
     def create_item(cls, data: MusicCreateRequest):
         artist = Artist.get_item(data.artist_id)
@@ -34,14 +41,36 @@ class Music(models.Model):
             released_date=data.released_date,
         )
 
+    # ---------------- GET ONE ----------------
     @classmethod
     def get_item(cls, music_id: int):
-        return cls.objects.filter(id=music_id).select_related("artist").first()
+        return (
+            cls.objects
+            .filter(id=music_id)
+            .select_related("artist")
+            .first()
+        )
 
+    # ---------------- GET ALL ----------------
     @classmethod
     def get_all_items(cls):
         return cls.objects.select_related("artist").all()
 
+    # ---------------- UPDATE ----------------
+    @classmethod
+    def update_item(cls, music_id: int, data: MusicUpdateRequest):
+        obj = cls.get_item(music_id)
+        if not obj:
+            return None
+
+        for field, value in data.__dict__.items():
+            if field != "id" and value is not None:
+                setattr(obj, field, value)
+
+        obj.save()
+        return obj
+
+    # ---------------- DELETE ----------------
     @classmethod
     def delete_item(cls, music_id: int):
         obj = cls.get_item(music_id)
@@ -50,6 +79,7 @@ class Music(models.Model):
         obj.delete()
         return True
 
+    # ---------------- RESPONSE ----------------
     @staticmethod
     def to_response(obj):
         return {
